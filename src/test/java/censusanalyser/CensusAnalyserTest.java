@@ -30,5 +30,12 @@ public class CensusAnalyserTest {
             Assert.assertEquals(CensusAnalyserException.ExceptionType.CENSUS_FILE_PROBLEM,e.type);
         }
     }
-
+    @Test
+    public void givenIndianCensusCodeCSVFileReturnsCorrectRecords() {
+        try {
+            CensusAnalyser censusAnalyser = new CensusAnalyser();
+            int numOfRecords = censusAnalyser.loadIndiaCensusCode(INDIA_CENSUS_Code_CSV_FILE_PATH);
+            Assert.assertEquals(37,numOfRecords);
+        } catch (CensusAnalyserException e) { }
+    }
 }
