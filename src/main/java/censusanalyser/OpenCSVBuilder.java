@@ -5,22 +5,29 @@ import com.opencsv.bean.CsvToBeanBuilder;
 
 import java.io.Reader;
 import java.util.Iterator;
+import java.util.List;
 
-public class OpenCSVBuilder implements ICSVBuilder{
+public class OpenCSVBuilder<E> implements ICSVBuilder{
+@Override
+    public  Iterator<E> getCSVFileIterator(Reader reader, Class csvClass) throws CSVBuilderException {
+       return this.getCSVBean(reader,csvClass).iterator();
+    }
 
-    public <E> Iterator<E> getCSVFileIterator(Reader reader, Class<E> csvClass) throws CSVBuilderException {
+    @Override
+    public  List getCSVFileList(Reader reader, Class csvClass) throws CSVBuilderException {
+        return this.getCSVBean(reader,csvClass).parse();
+    }
+
+    private  CsvToBean<E> getCSVBean(Reader reader, Class csvClass) throws CSVBuilderException {
         try {
             CsvToBeanBuilder<E> csvToBeanBuilder = new CsvToBeanBuilder<>(reader);
             csvToBeanBuilder.withType(csvClass);
             csvToBeanBuilder.withIgnoreLeadingWhiteSpace(true);
-            CsvToBean<E> csvToBean = csvToBeanBuilder.build();
-            return csvToBean.iterator();
-        } catch (IllegalStateException e) {
-            throw new CSVBuilderException(e.getMessage(),
-                                                CSVBuilderException.ExceptionType.CENSUS_FILE_PROBLEM);
+            return csvToBeanBuilder.build();
         }
-
-//    private Iterator<IndiaCensusCSV> getCSVFileIterator1(Reader reader,IndiaCensusCSV csvClass) throws CensusAnalyserException {}
-//    private Iterator<IndiaCensusCSV> getCSVFileIterator2(Reader reader,IndiaCensusCSV csvClass) throws CensusAnalyserException {}
+        catch (IllegalStateException e) {
+            throw new CSVBuilderException(e.getMessage(),
+                    CSVBuilderException.ExceptionType.CENSUS_FILE_PROBLEM);
+        }
     }
-}
+    }
